@@ -96,7 +96,7 @@ def render_navbar():
         """
         <div class="wpatlas-navbar">
             <div class="brand">Water Productivity Atlas &ndash; India</div>
-            <div class="wpatlas-navlinks"><span class="disabled">Scenarios &amp; Nexus: coming soon</span></div>
+            <div class="wpatlas-navlinks"><span class="disabled">Nexus: coming soon</span></div>
         </div>
         """,
         unsafe_allow_html=True,

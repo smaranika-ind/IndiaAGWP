@@ -10,24 +10,26 @@ import streamlit as st
 from common import inject_css, render_navbar
 from tab_trends import render_trends
 from tab_comparisons import render_comparisons
+from tab_scenarios import render_sidebar_controls_scenario, render_scenario_view
 
 st.set_page_config(page_title="Water Productivity Atlas - India", layout="wide")
 inject_css()
 render_navbar()
 
-# A mode selector (styled to look like tabs) rather than st.tabs(): Trends and
-# Comparison need genuinely different sidebars (Comparison uses multi-select
-# State(s)/Crop(s), Trends uses single-select + Tertiary unit). With st.tabs(),
-# every tab's body runs on every script pass regardless of which is visually
-# selected, so two different sidebar forms would both render at once. A radio
-# only executes the branch that's actually selected, avoiding that.
-mode = st.radio("Section", ["Trends", "Comparison"], horizontal=True,
+# A mode selector (styled to look like tabs) rather than st.tabs(): each section
+# needs a genuinely different sidebar. With st.tabs(), every tab's body runs on
+# every script pass regardless of which is visually selected, so different sidebar
+# forms would all render at once. A radio only executes the branch that's selected.
+mode = st.radio("Section", ["Trends", "Comparison", "Scenarios"], horizontal=True,
                 label_visibility="collapsed", key="page_mode")
 
 if mode == "Trends":
     render_trends()
-else:
+elif mode == "Comparison":
     render_comparisons()
+else:
+    sel = render_sidebar_controls_scenario()
+    render_scenario_view(sel)
 
 st.sidebar.markdown("---")
 st.sidebar.caption(
