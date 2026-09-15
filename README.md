@@ -123,6 +123,40 @@ streamlit run app.py
 
 Then open the local URL it prints (usually `http://localhost:8501`).
 
+## Comparison tab: how it decides what to compare
+
+The Comparison sidebar lets you multi-select **State(s)** and **Crop(s)** (unlike
+Trends, which is single-select). The logic:
+
+- **2+ states selected, 1 crop** -> compares **states**: one district-level map per
+  state (fixed crop), a box per state, and 2 trend lines per state (indicator+Yield,
+  Area+CWU) - matches picking e.g. Assam + Bihar with Rice.
+- **2+ crops selected** (regardless of state count) -> compares **crops**: one map
+  per crop (district-level, zoomed to the single state if one is picked, or
+  nationwide if "All India" is picked), a box per crop, 2 trend lines per crop.
+- **1 state, 1 crop** -> falls back to a single view (no real comparison, but still
+  under the "Spatial Variation" header/layout).
+- More than 4 selections are truncated to the first 4, to keep the stacked maps and
+  multi-line charts legible - a note appears on screen when this happens.
+
+Trends and Comparison use a mode-selector (styled to look like tabs) instead of
+Streamlit's native tabs, because they need genuinely different sidebars - with
+native tabs, every tab's code runs on every script pass regardless of which is
+visually selected, so two different sidebar forms would both render into the
+sidebar at once. A radio button only executes the branch that's actually chosen.
+
+## A real bug this fixed: crop names with inconsistent casing across years
+
+The raw `crop_data_calculated_final_3.csv` labels two crops inconsistently: **"Rice"**
+appears only in 1999, then **"rice"** (lowercase) for 2000-2022; same issue for
+**"Other cereals"/"Other Cereals"**. Before this was caught, the app was treating
+these as two unrelated crops, so selecting "Rice" only ever showed one year of data
+(1999) and looked broken (blank map, degenerate single-point trend charts) for every
+other year. `data_prep/build_datasets.py` now title-cases every crop name before
+aggregating, which merges these back into one consistent crop spanning the full
+1999-2022 range. If you load new raw data later and something looks similarly "broken
+for most years but fine for one," check for this exact pattern first.
+
 ## Deploying for free — Streamlit Community Cloud
 
 This is the easiest free option and needs no server knowledge.

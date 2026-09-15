@@ -1,5 +1,6 @@
-from atlas_view import render_atlas_view
+from atlas_view import render_sidebar_controls_comparison, render_comparison_view
 
 
-def render_comparisons(sel):
-    render_atlas_view(mode="comparison", sel=sel)
+def render_comparisons():
+    sel = render_sidebar_controls_comparison()
+    render_comparison_view(sel)

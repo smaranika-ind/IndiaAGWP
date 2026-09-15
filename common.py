@@ -73,6 +73,14 @@ def inject_css():
         .stTabs [data-baseweb="tab"] {{font-weight: 700; font-size: 18px; padding-top: 4px;}}
         .stTabs [aria-selected="true"] {{color: {ACCENT_GREEN} !important;}}
         .stTabs [data-baseweb="tab-highlight"] {{background-color: {ACCENT_GREEN} !important;}}
+
+        /* Style the Trends/Comparison mode-selector (a st.radio) to look like a tab strip */
+        div[role="radiogroup"] {{
+            gap: 28px; border-bottom: 2px solid #d7dbe0; padding-bottom: 6px; margin-bottom: 6px;
+        }}
+        div[role="radiogroup"] label {{font-weight: 700; font-size: 18px;}}
+        div[role="radiogroup"] label div:first-child {{display: none;}}
+        div[role="radiogroup"] label:has(input:checked) p {{color: {ACCENT_GREEN} !important;}}
         </style>
         """,
         unsafe_allow_html=True,

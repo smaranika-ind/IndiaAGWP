@@ -77,7 +77,12 @@ def main():
     df.columns = [c.strip() for c in df.columns]
     df["STATE"] = df["state"].astype(str).str.strip()
     df["DISTRICT"] = df["district"].astype(str).str.strip()
-    df["CROP"] = df["crop"].astype(str).str.strip()
+    df["CROP"] = df["crop"].astype(str).str.strip().str.title()
+    # NOTE: the raw source data labels the same crop inconsistently across years
+    # in a couple of cases (e.g. "Rice" only in 1999, "rice" for 2000-2022; same
+    # for "Other cereals"/"Other Cereals"). Title-casing merges these into one
+    # consistent crop category so the full multi-year trend is available - without
+    # this, e.g. Rice's data effectively vanished for every year except 1999.
     df["YEAR"] = df["year"].astype(int)
     df["STATE_KEY"] = df["STATE"].map(key)
     df["DISTRICT_KEY"] = df["DISTRICT"].map(key)

@@ -8,7 +8,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import streamlit as st
 
 from common import inject_css, render_navbar
-from atlas_view import render_sidebar_controls
 from tab_trends import render_trends
 from tab_comparisons import render_comparisons
 
@@ -16,15 +15,19 @@ st.set_page_config(page_title="Water Productivity Atlas - India", layout="wide")
 inject_css()
 render_navbar()
 
-sel = render_sidebar_controls()
+# A mode selector (styled to look like tabs) rather than st.tabs(): Trends and
+# Comparison need genuinely different sidebars (Comparison uses multi-select
+# State(s)/Crop(s), Trends uses single-select + Tertiary unit). With st.tabs(),
+# every tab's body runs on every script pass regardless of which is visually
+# selected, so two different sidebar forms would both render at once. A radio
+# only executes the branch that's actually selected, avoiding that.
+mode = st.radio("Section", ["Trends", "Comparison"], horizontal=True,
+                label_visibility="collapsed", key="page_mode")
 
-tab_trends, tab_comparisons = st.tabs(["Trends", "Comparison"])
-
-with tab_trends:
-    render_trends(sel)
-
-with tab_comparisons:
-    render_comparisons(sel)
+if mode == "Trends":
+    render_trends()
+else:
+    render_comparisons()
 
 st.sidebar.markdown("---")
 st.sidebar.caption(
