@@ -12,6 +12,20 @@ from common import (
 )
 from indicators import all_labels_flat, indicator_options, unit_of, short_of
 
+# --- Layout sizing: keep the 3 right-hand panels' combined height equal to the
+# left map panel's height, split evenly (map height / 3 each), so the two
+# columns end flush instead of the right side trailing on much longer. ---
+MAP_HEIGHT = 520
+_PANEL_HEADER_H = 38        # approx height of the dark ".panel-header" bar (px)
+_PANEL_BODY_OVERHEAD = 26   # approx border + padding around each chart (px)
+_PANEL_GAP = 18             # ".panel-body" margin-bottom between stacked panels (px)
+_N_RIGHT_PANELS = 3
+_total_gaps = _PANEL_GAP * (_N_RIGHT_PANELS - 1)
+RIGHT_CHART_HEIGHT = round(
+    (MAP_HEIGHT + _PANEL_HEADER_H + _PANEL_BODY_OVERHEAD - _total_gaps) / _N_RIGHT_PANELS
+    - (_PANEL_HEADER_H + _PANEL_BODY_OVERHEAD)
+)
+
 
 def _crop_display(c):
     return "All crops" if c == "ALL CROPS" else c
@@ -197,7 +211,7 @@ def _render_map(level, indicator_col, crop, year, unit, short, zoom_state, mode)
 
     fig.update_geos(fitbounds="locations", visible=False)
     fig.update_layout(
-        margin=dict(l=0, r=0, t=10, b=0), height=520,
+        margin=dict(l=0, r=0, t=10, b=0), height=MAP_HEIGHT,
         legend_title_text=f"{_crop_display(crop)} {short} ({unit})",
         legend=dict(orientation="v", yanchor="top", y=0.98, xanchor="left", x=1.0),
         paper_bgcolor="white", plot_bgcolor="white",
@@ -219,8 +233,9 @@ def _render_boxplot(level, indicator_col, crop, year, zoom_state, label_choice, 
     plot_df["YEAR_STR"] = str(year)
     fig = px.box(plot_df, x="YEAR_STR", y=indicator_col, points="all",
                  labels={indicator_col: f"{label_choice} ({unit})", "YEAR_STR": "Year"})
-    fig.update_layout(margin=dict(l=0, r=0, t=10, b=0), height=270, xaxis_title=None,
-                       paper_bgcolor="white", plot_bgcolor="white")
+    fig.update_layout(margin=dict(l=0, r=0, t=6, b=0), height=RIGHT_CHART_HEIGHT, xaxis_title=None,
+                       paper_bgcolor="white", plot_bgcolor="white",
+                       font=dict(size=11))
     # Spread the overlaid points across the box width (jitter) instead of stacking them
     # in a single vertical line down the middle, which is what looked "misaligned".
     fig.update_traces(marker_color="#e8845a", line_color="#e8845a",
@@ -250,9 +265,10 @@ def _render_dual_axis(secondary_unit, crop, left_col, right_col, left_name, righ
                               line=dict(color=right_color)), secondary_y=True)
     fig.update_yaxes(title_text=left_axis_title or left_name, secondary_y=False, color=left_color)
     fig.update_yaxes(title_text=right_axis_title or right_name, secondary_y=True, color=right_color)
-    fig.update_layout(margin=dict(l=0, r=0, t=10, b=0), height=270,
-                       legend=dict(orientation="h", yanchor="bottom", y=1.02),
-                       paper_bgcolor="white", plot_bgcolor="white")
+    fig.update_layout(margin=dict(l=0, r=0, t=22, b=0), height=RIGHT_CHART_HEIGHT,
+                       legend=dict(orientation="h", yanchor="bottom", y=1.02, font=dict(size=10)),
+                       paper_bgcolor="white", plot_bgcolor="white",
+                       font=dict(size=11))
     st.plotly_chart(fig, use_container_width=True,
                      key=f"dual_{ns}_{secondary_unit}_{crop}_{left_col}_{right_col}")
 
