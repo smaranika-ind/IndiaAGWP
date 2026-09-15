@@ -133,53 +133,5 @@ Nexus (the 4th component of the reference app) still needs `DH_M` (pumping
 head) and `WT_EFF` (pump efficiency) for its energy-cost calculation - not in
 any file provided yet.
 
-## Why not PostgreSQL/PostGIS?
 
-A training/presentation tool with fixed underlying data doesn't need a live
-database server running around the clock, or a second thing to deploy and keep
-in sync. All the calculations were run **once**, ahead of time, by the two
-`data_prep/` scripts, and saved as compact files the app just reads.
 
-## Data notes
-
-- Main Trends/Comparison source: `crop_data_calculated_final_3.csv` (district x
-  crop x year, 1999-2022).
-- An **"ALL CROPS"** option is a true recomputed aggregate (summed volumes,
-  ratios recalculated), not a misleading average-of-ratios.
-- District boundaries matched to the data by (state, district) name: 595/603
-  pairs matched automatically (98.7%); a handful of rows in the raw CSV have
-  mismatched state/district labels and won't appear on the map.
-- State boundaries: Dadra & Nagar Haveli + Daman & Diu share one polygon; the
-  two "Jammu and Kashmir" rows in the raw data are merged for the map only.
-- **Crop-name bug fixed**: several crops were labeled inconsistently across
-  years with zero year-overlap between spellings (e.g. "Rice" only in 1999,
-  "rice" for 2000-2022; "Sugar" vs "Sugarcane"; 8 pairs total) - left unmerged,
-  the "losing" spelling had almost no data. `build_datasets.py` title-cases
-  crop names and applies an explicit `CROP_MERGE_MAP` to fix this. Brought the
-  crop count from 78 raw labels to 69 real, distinct crops. If new raw data
-  looks "broken for most years but fine for one," check for this pattern first.
-
-## Running it locally (optional, to preview before deploying)
-
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-## Deploying for free — Streamlit Community Cloud
-
-1. Create a free GitHub account/repo if you don't have one.
-2. Upload every file and folder from inside `wpatlas_webapp/` directly to your
-   repo's ROOT (not into a subfolder — see the note above).
-3. Go to **share.streamlit.io**, sign in with GitHub, click **New app**, pick
-   your repo, set Main file path to `app.py`, click Deploy.
-4. Every future `git push` auto-redeploys.
-
-## Extending it later
-- New indicator: add one line to `INDICATORS` in `indicators.py`.
-- New yearly data: replace the raw CSV path in `data_prep/build_datasets.py`,
-  re-run it, commit the updated `app_data/` files.
-- River-basin scale: needs a basin boundary shapefile + district->basin lookup,
-  then a `RiverBasin` branch alongside `District`/`State`/`National`.
-- Nexus tab: needs `DH_M` and `WT_EFF` (see above), then follow the pattern in
-  `tab_scenarios.py`.
