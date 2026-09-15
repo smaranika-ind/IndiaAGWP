@@ -14,17 +14,16 @@ from tab_comparisons import render_comparisons
 
 st.set_page_config(page_title="Water Productivity Atlas - India", layout="wide")
 inject_css()
+render_navbar()
 
 sel = render_sidebar_controls()
 
 tab_trends, tab_comparisons = st.tabs(["Trends", "Comparison"])
 
 with tab_trends:
-    render_navbar("Trends")
     render_trends(sel)
 
 with tab_comparisons:
-    render_navbar("Comparison")
     render_comparisons(sel)
 
 st.sidebar.markdown("---")

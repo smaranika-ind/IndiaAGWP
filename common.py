@@ -39,7 +39,7 @@ def inject_css():
             align-items: center;
             justify-content: space-between;
             border-bottom: 3px solid {PANEL_DARK};
-            margin: -1rem -1rem 1rem -1rem;
+            margin: 0 -1rem 1rem -1rem;
         }}
         .wpatlas-navbar .brand {{
             font-size: 28px; font-weight: 800; color: #1a1a1a;
@@ -69,28 +69,27 @@ def inject_css():
         }}
         section[data-testid="stSidebar"] {{background: #eef1f4;}}
 
-        .stTabs [data-baseweb="tab-list"] {{gap: 28px;}}
-        .stTabs [data-baseweb="tab"] {{font-weight: 700; font-size: 16px;}}
+        .stTabs [data-baseweb="tab-list"] {{gap: 32px; border-bottom: 2px solid #d7dbe0;}}
+        .stTabs [data-baseweb="tab"] {{font-weight: 700; font-size: 18px; padding-top: 4px;}}
         .stTabs [aria-selected="true"] {{color: {ACCENT_GREEN} !important;}}
+        .stTabs [data-baseweb="tab-highlight"] {{background-color: {ACCENT_GREEN} !important;}}
         </style>
         """,
         unsafe_allow_html=True,
     )
 
 
-def render_navbar(active):
-    tabs = ["Home", "Trends", "Comparison", "Scenarios", "Nexus"]
-    enabled = {"Trends", "Comparison"}
-    spans = []
-    for t in tabs:
-        cls = "active" if t == active else ("disabled" if t not in enabled else "")
-        title = "" if t in enabled or t == "Home" else 'title="Needs additional data - see README"'
-        spans.append(f'<span class="{cls}" {title}>{t}</span>')
+def render_navbar():
+    """A static brand bar - rendered once, above the real (native, clickable)
+    Streamlit tabs. Earlier this also drew a row of 'Home / Trends / Comparison /
+    Scenarios / Nexus' text links, but those were purely decorative (no click
+    handler) and, worse, visually overlapped the real tab control due to a
+    negative-margin CSS trick, making the genuine tabs impossible to click."""
     st.markdown(
-        f"""
+        """
         <div class="wpatlas-navbar">
             <div class="brand">\U0001F4A7 Water Productivity Atlas &ndash; India</div>
-            <div class="wpatlas-navlinks">{''.join(spans)}</div>
+            <div class="wpatlas-navlinks"><span class="disabled">Scenarios &amp; Nexus: coming soon</span></div>
         </div>
         """,
         unsafe_allow_html=True,
