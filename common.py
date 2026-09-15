@@ -79,7 +79,6 @@ def inject_css():
             gap: 28px; border-bottom: 2px solid #d7dbe0; padding-bottom: 6px; margin-bottom: 6px;
         }}
         div[role="radiogroup"] label {{font-weight: 700; font-size: 18px;}}
-        div[role="radiogroup"] label div:first-child {{display: none;}}
         div[role="radiogroup"] label:has(input:checked) p {{color: {ACCENT_GREEN} !important;}}
         </style>
         """,
