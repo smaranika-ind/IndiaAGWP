@@ -23,7 +23,7 @@ def inject_css():
         f"""
         <style>
         #MainMenu, footer {{visibility: hidden;}}
-        .block-container {{padding-top: 0.5rem; padding-bottom: 1rem; max-width: 1500px;}}
+        .block-container {{padding-top: 3.5rem; padding-bottom: 1rem; max-width: 1500px;}}
 
         /* Force a light grey canvas regardless of the visitor's system theme
            preference - Streamlit Cloud otherwise sometimes serves a dark theme. */
@@ -95,7 +95,7 @@ def render_navbar():
     st.markdown(
         """
         <div class="wpatlas-navbar">
-            <div class="brand">\U0001F4A7 Water Productivity Atlas &ndash; India</div>
+            <div class="brand">Water Productivity Atlas &ndash; India</div>
             <div class="wpatlas-navlinks"><span class="disabled">Scenarios &amp; Nexus: coming soon</span></div>
         </div>
         """,

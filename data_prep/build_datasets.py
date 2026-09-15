@@ -78,11 +78,25 @@ def main():
     df["STATE"] = df["state"].astype(str).str.strip()
     df["DISTRICT"] = df["district"].astype(str).str.strip()
     df["CROP"] = df["crop"].astype(str).str.strip().str.title()
-    # NOTE: the raw source data labels the same crop inconsistently across years
-    # in a couple of cases (e.g. "Rice" only in 1999, "rice" for 2000-2022; same
-    # for "Other cereals"/"Other Cereals"). Title-casing merges these into one
-    # consistent crop category so the full multi-year trend is available - without
-    # this, e.g. Rice's data effectively vanished for every year except 1999.
+    # NOTE: the raw source data labels several crops inconsistently across years -
+    # a different spelling/casing was used in 1999 alone, then a different one from
+    # 2000-2022, with ZERO year overlap between the two spellings (confirmed for every
+    # pair below). Left unmerged, each pair looks like two different crops, and the
+    # crop that got the "wrong" (post-1999) name effectively has no data for most
+    # years - which is exactly what broke Rice, Sugarcane, and others. Title-casing
+    # (above) already merges the pure-casing cases (Rice/rice, Other Cereals/cereals).
+    # This map fixes the remaining spelling/wording variants.
+    CROP_MERGE_MAP = {
+        "Arhar": "Arhar/Tur",
+        "Dry Chilli": "Dry Chillies",
+        "Grams": "Gram",
+        "Ground Nut": "Groundnut",
+        "Sesseme": "Sesamum",
+        "Soya": "Soyabean",
+        "Sugar": "Sugarcane",
+        "Urd": "Urad",
+    }
+    df["CROP"] = df["CROP"].replace(CROP_MERGE_MAP)
     df["YEAR"] = df["year"].astype(int)
     df["STATE_KEY"] = df["STATE"].map(key)
     df["DISTRICT_KEY"] = df["DISTRICT"].map(key)

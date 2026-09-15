@@ -147,15 +147,29 @@ sidebar at once. A radio button only executes the branch that's actually chosen.
 
 ## A real bug this fixed: crop names with inconsistent casing across years
 
-The raw `crop_data_calculated_final_3.csv` labels two crops inconsistently: **"Rice"**
-appears only in 1999, then **"rice"** (lowercase) for 2000-2022; same issue for
-**"Other cereals"/"Other Cereals"**. Before this was caught, the app was treating
-these as two unrelated crops, so selecting "Rice" only ever showed one year of data
-(1999) and looked broken (blank map, degenerate single-point trend charts) for every
-other year. `data_prep/build_datasets.py` now title-cases every crop name before
-aggregating, which merges these back into one consistent crop spanning the full
-1999-2022 range. If you load new raw data later and something looks similarly "broken
-for most years but fine for one," check for this exact pattern first.
+The raw `crop_data_calculated_final_3.csv` labels several crops inconsistently
+across years - most obviously **"Rice"** in 1999 only, then **"rice"** (lowercase)
+for 2000-2022, and **"Sugar"** in 1999 vs **"Sugarcane"** for 2000-2022 - with
+**zero year overlap** between the two spellings in every case, confirming these
+are the same crop renamed partway through, not genuinely different crops.
+Left unmerged, whichever spelling "won" the post-1999 years effectively had no
+data for almost the entire time range - which is exactly what made Rice (and
+Sugarcane, and others) look broken: blank map, a degenerate single-point trend
+chart.
+
+`data_prep/build_datasets.py` fixes this in two steps:
+1. Title-cases every crop name (merges pure-casing splits: Rice/rice, Other
+   Cereals/cereals).
+2. Applies an explicit `CROP_MERGE_MAP` for the remaining spelling/wording
+   variants confirmed to have zero year overlap: Arhar->Arhar/Tur, Dry
+   Chilli->Dry Chillies, Grams->Gram, Ground Nut->Groundnut, Sesseme->Sesamum,
+   Soya->Soyabean, Sugar->Sugarcane, Urd->Urad.
+
+This brought the crop count from 78 raw labels down to 69 real, distinct crops,
+each with the full 1999-2022 range. If you load new raw data later and a crop
+looks "broken for most years but fine for one," check for this exact pattern
+first - group by crop name and look at each one's min/max year and row count,
+the way this fix was diagnosed.
 
 ## Deploying for free — Streamlit Community Cloud
 
